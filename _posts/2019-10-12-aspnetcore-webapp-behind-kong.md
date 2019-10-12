@@ -99,9 +99,9 @@ Source code for the demo application, and docker-compose files are hosted on Git
 
 ## References
 In no particular order  
-[https://en.wikipedia.org/wiki/Advanced_Encryption_Standard](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)
-[Konga]https://github.com/pantsel/konga)
-[docker-compose.yml for kong, postgres and konga](https://gist.github.com/pantsel/73d949774bd8e917bfd3d9745d71febf)
-[Google](https://www.google.com)
-[How to Update a Single Running docker-compose Container](https://staxmanade.com/2016/09/how-to-update-a-single-running-docker-compose-container/)
+[https://en.wikipedia.org/wiki/Advanced_Encryption_Standard](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard)  
+[Konga]https://github.com/pantsel/konga)  
+[docker-compose.yml for kong, postgres and konga](https://gist.github.com/pantsel/73d949774bd8e917bfd3d9745d71febf)  
+[Google](https://www.google.com)  
+[How to Update a Single Running docker-compose Container](https://staxmanade.com/2016/09/how-to-update-a-single-running-docker-compose-container/)  
 And many more
