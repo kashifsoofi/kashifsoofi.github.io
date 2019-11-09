@@ -99,7 +99,7 @@ public bool VerifySignature(string data, string signature, string publicKeyJson)
 }
 ```
 
-Complete code for the wrapper class that implements encryption and decryption using RSA can be found at [RsaCrypto.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/src/Sandbox.Crypto/RsaCrypto.cs). Unit tests for the wrapper class can be found at [RsaCryptoTests.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/test/Sandbox.Crypto.Tests/RsaCryptoTests.cs). Complete project as class library along with tests is at [CryptoSandbox](https://github.com/kashifsoofi/crypto-sandbox/tree/master/dotnet).
+Complete code for the wrapper class that implements signing and its verification using RSA can be found at [RsaCrypto.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/src/Sandbox.Crypto/RsaCrypto.cs). Unit tests for the wrapper class can be found at [RsaCryptoTests.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/test/Sandbox.Crypto.Tests/RsaCryptoTests.cs). Complete project as class library along with tests is at [CryptoSandbox](https://github.com/kashifsoofi/crypto-sandbox/tree/master/dotnet).
 
 ## References
 [https://en.wikipedia.org/wiki/RSA_(cryptosystem)](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
