@@ -17,7 +17,7 @@ Public key cryptosystems are used for 2 major use cases
 1. Encryption
 2. Verification
 
-Focus of this article is verification. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Process of verification involves signing of data with a private key that can be verified using associated public key. Signing is always done with a private key that is only accessible by owner. Verification is done using a public key accessible by any member of the public. Anybody can use it (public key) to verify a data signature, if successful meaning it is genuinely coming from the owner of the private key.
+Focus of this article is signing/verification. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Process of verification involves signing of data with a private key that can be verified using associated public key. Signing is always done with a private key that is only accessible by owner. Verification is done using a public key accessible by any member of the public. Anybody can use it (public key) to verify a data signature, if successful meaning it is genuinely coming from the owner of the private key.
 
 ## RSA In .NET Core
 [RSA](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsa?view=netcore-2.2) represents the abstract base class from which all implementations of RSA mush inherit. .NET provides following implementations of RSA at the time of writing.
