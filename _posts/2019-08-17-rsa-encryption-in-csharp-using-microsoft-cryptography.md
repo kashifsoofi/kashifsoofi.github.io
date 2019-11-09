@@ -11,11 +11,11 @@ tags:
 Sample class library implementing RSA encryption using Microsoft's Cryptography Library
 
 ## Introduction
-**RSA (Rivest–Shamir–Adleman)** is a public-key cryptostystems. In such a cryptosystem, a pair of keys is used often called private and public key pair.
+**RSA (Rivest–Shamir–Adleman)** is a public-key cryptosystem. In such a cryptosystem, a pair of keys is used often called private and public key pair.
 
 Public key cryptosystems are used for 2 major use cases
-# Encryption
-# Verification
+1. Encryption
+2. Verification
 
 Focus of this article is encryption. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Encryption is always done with a public key, this ensures that only the owner of private key can access the data unencrypted and will remain private between the encrytor and owner of private key.
 
@@ -36,18 +36,19 @@ using System.Security.Cryptography;
 ```
 
 ### Key Generation
-GenerateKeyPair method creates a new instance of RSA, sets desired key size and export key pair as json strings, there is `ToXmlString` method that can be used if you are not using .NET Core.
+GenerateKeyPair method creates a new instance of RSA, sets desired key size and export parameters and convert to `RsaPrivateKeyParameters`/`RsaPublicKeyParameters` helper classes and export those as json strings.
 
 ### Encryption
-Encrypt method accepts a string and public key serialized as json, encrypts string with key using a padding and returns a base64 encoded encrypted string.
+Encrypt method accepts a string and `RsaPublicKeyParameters` serialized as json, encrypts string with key using `OaepSHA256` padding and returns a base64 encoded encrypted string.
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `Encrypt` method on `rsa` instance to encrypt data.
 ```csharp
-var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);
+var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
 ```
 We then convert encrypted data to base64 string and return to caller.
 
@@ -57,27 +58,28 @@ public string Encrypt(string plainText, string publicKeyJson)
 {
     using (var rsa = RSA.Create())
     {
-        var rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(publicKeyJson);
+        var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
         rsa.ImportParameters(rsaParameters);
 
         var dataToEncrypt = Encoding.UTF8.GetBytes(plainText);
-        var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);
+        var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
         return Convert.ToBase64String(encryptedData);
     }
 }
 ```
 
 ### Decryption
-Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded string and private key serialized as json. It imports key, performs decryption and returns plain text.
+Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded string and `RsaPrivateKeyParameters` serialized as json. It imports key, performs decryption and returns plain text.
 
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `Decrypt` method on `rsa` instance to decrypt data.
 ```csharp
-var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.Pkcs1);
+var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
 ```
 We then convert decrypted data to string and return to caller.
 
@@ -87,11 +89,11 @@ public string Decrypt(string encryptedData, string privateKeyJson)
 {
     using (var rsa = RSA.Create())
     {
-        var rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(privateKeyJson);
+        var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
         rsa.ImportParameters(rsaParameters);
 
         var dataToDecrypt = Convert.FromBase64String(encryptedData);
-        var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.Pkcs1);
+        var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
         return Encoding.UTF8.GetString(decryptedData);
     }
 }

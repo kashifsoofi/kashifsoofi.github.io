@@ -11,13 +11,13 @@ tags:
 Sample class library implementing RSA signing using Microsoft's Cryptography Library
 
 ## Introduction
-**RSA (Rivest–Shamir–Adleman)** is a public-key cryptostystems. In such a cryptosystem, a pair of keys is used often called private and public key pair.
+**RSA (Rivest–Shamir–Adleman)** is a public-key cryptosystem. In such a cryptosystem, a pair of keys is used often called private and public key pair.
 
 Public key cryptosystems are used for 2 major use cases
-# Encryption
-# Verification
+1. Encryption
+2. Verification
 
-Focus of this article is verification. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Process of verification involves signing of data with a private key that can be verified using associated public key. Signing is always done with a private key that is only accessible by owner. Verification is done using a public key accessible by any member of the public. Anybody can use it (public key) to verify a data signature, if successful meaning it is genuinely coming from the owner of the private key.
+Focus of this article is signing/verification. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Process of verification involves signing of data with a private key that can be verified using associated public key. Signing is always done with a private key that is only accessible by owner. Verification is done using a public key accessible by any member of the public. Anybody can use it (public key) to verify a data signature, if successful meaning it is genuinely coming from the owner of the private key.
 
 ## RSA In .NET Core
 [RSA](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rsa?view=netcore-2.2) represents the abstract base class from which all implementations of RSA mush inherit. .NET provides following implementations of RSA at the time of writing.
@@ -36,13 +36,14 @@ using System.Security.Cryptography;
 ```
 
 ### Key Generation
-GenerateKeyPair method creates a new instance of RSA, sets desired key size and export key pair as json strings, there is `ToXmlString` method that can be used if you are not using .NET Core.
+GenerateKeyPair method creates a new instance of RSA, sets desired key size and export parameters and convert to `RsaPrivateKeyParameters`/`RsaPublicKeyParameters` helper classes and export those as json strings.
 
 ### Sign Data
-SignData method accepts a string and private key serialized as json, signs data with key using a hash and padding and finally returns a base64 encoded data signature.
+SignData method accepts a string and `RsaPrivateKeyParameters` serialized as json, signs data with key using a hash and padding and finally returns a base64 encoded data signature.
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `SignData` method on `rsa` instance to encrypt data.
@@ -68,11 +69,12 @@ public string SignData(string data, string privateKeyJson)
 ```
 
 ### Verify Signature
-VerifySignature method works in conjunction with SignData method above, it accepts data, base64 encoded signature and public key serialized as json. It imports key, performs verification and returns a boolean result.
+VerifySignature method works in conjunction with SignData method above, it accepts data, base64 encoded signature and `RsaPublicKeyParameters` serialized as json. It imports key, performs verification and returns a boolean result.
 
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `VerifyData` method on `rsa` instance to decrypt data.
@@ -97,7 +99,7 @@ public bool VerifySignature(string data, string signature, string publicKeyJson)
 }
 ```
 
-Complete code for the wrapper class that implements encryption and decryption using RSA can be found at [RsaCrypto.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/src/Sandbox.Crypto/RsaCrypto.cs). Unit tests for the wrapper class can be found at [RsaCryptoTests.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/test/Sandbox.Crypto.Tests/RsaCryptoTests.cs). Complete project as class library along with tests is at [CryptoSandbox](https://github.com/kashifsoofi/crypto-sandbox/tree/master/dotnet).
+Complete code for the wrapper class that implements signing and its verification using RSA can be found at [RsaCrypto.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/src/Sandbox.Crypto/RsaCrypto.cs). Unit tests for the wrapper class can be found at [RsaCryptoTests.cs](https://github.com/kashifsoofi/crypto-sandbox/blob/master/dotnet/test/Sandbox.Crypto.Tests/RsaCryptoTests.cs). Complete project as class library along with tests is at [CryptoSandbox](https://github.com/kashifsoofi/crypto-sandbox/tree/master/dotnet).
 
 ## References
 [https://en.wikipedia.org/wiki/RSA_(cryptosystem)](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
