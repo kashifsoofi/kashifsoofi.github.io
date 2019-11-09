@@ -36,18 +36,19 @@ using System.Security.Cryptography;
 ```
 
 ### Key Generation
-GenerateKeyPair method creates a new instance of RSA, sets desired key size and export key pair as json strings, there is `ToXmlString` method that can be used if you are not using .NET Core.
+GenerateKeyPair method creates a new instance of RSA, sets desired key size and export parameters and convert to `RsaPrivateKeyParameters`/`RsaPublicKeyParameters` helper classes and export those as json strings.
 
 ### Encryption
-Encrypt method accepts a string and public key serialized as json, encrypts string with key using a padding and returns a base64 encoded encrypted string.
+Encrypt method accepts a string and `RsaPublicKeyParameters` serialized as json, encrypts string with key using `OaepSHA256` padding and returns a base64 encoded encrypted string.
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `Encrypt` method on `rsa` instance to encrypt data.
 ```csharp
-var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);
+var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
 ```
 We then convert encrypted data to base64 string and return to caller.
 
@@ -57,11 +58,11 @@ public string Encrypt(string plainText, string publicKeyJson)
 {
     using (var rsa = RSA.Create())
     {
-        var rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(publicKeyJson);
+        var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
         rsa.ImportParameters(rsaParameters);
 
         var dataToEncrypt = Encoding.UTF8.GetBytes(plainText);
-        var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);
+        var encryptedData = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
         return Convert.ToBase64String(encryptedData);
     }
 }
@@ -73,11 +74,12 @@ Decrypt method works in conjunction with Encrypt method above, it accepts base64
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `Decrypt` method on `rsa` instance to decrypt data.
 ```csharp
-var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.Pkcs1);
+var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
 ```
 We then convert decrypted data to string and return to caller.
 
@@ -87,11 +89,11 @@ public string Decrypt(string encryptedData, string privateKeyJson)
 {
     using (var rsa = RSA.Create())
     {
-        var rsaParameters = JsonConvert.DeserializeObject<RSAParameters>(privateKeyJson);
+        var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
         rsa.ImportParameters(rsaParameters);
 
         var dataToDecrypt = Convert.FromBase64String(encryptedData);
-        var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.Pkcs1);
+        var decryptedData = rsa.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
         return Encoding.UTF8.GetString(decryptedData);
     }
 }

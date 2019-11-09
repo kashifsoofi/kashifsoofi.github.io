@@ -36,7 +36,7 @@ using System.Security.Cryptography;
 ```
 
 ### Key Generation
-GenerateKeyPair method creates a new instance of RSA, sets desired key size and export key pair as json strings, there is `ToXmlString` method that can be used if you are not using .NET Core.
+GenerateKeyPair method creates a new instance of RSA, sets desired key size and export parameters and convert to `RsaPrivateKeyParameters`/`RsaPublicKeyParameters` helper classes and export those as json strings.
 
 ### Sign Data
 SignData method accepts a string and private key serialized as json, signs data with key using a hash and padding and finally returns a base64 encoded data signature.
