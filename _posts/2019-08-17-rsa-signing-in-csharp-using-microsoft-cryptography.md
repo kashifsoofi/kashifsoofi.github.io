@@ -39,10 +39,11 @@ using System.Security.Cryptography;
 GenerateKeyPair method creates a new instance of RSA, sets desired key size and export parameters and convert to `RsaPrivateKeyParameters`/`RsaPublicKeyParameters` helper classes and export those as json strings.
 
 ### Sign Data
-SignData method accepts a string and private key serialized as json, signs data with key using a hash and padding and finally returns a base64 encoded data signature.
+SignData method accepts a string and `RsaPrivateKeyParameters` serialized as json, signs data with key using a hash and padding and finally returns a base64 encoded data signature.
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `SignData` method on `rsa` instance to encrypt data.
@@ -68,11 +69,12 @@ public string SignData(string data, string privateKeyJson)
 ```
 
 ### Verify Signature
-VerifySignature method works in conjunction with SignData method above, it accepts data, base64 encoded signature and public key serialized as json. It imports key, performs verification and returns a boolean result.
+VerifySignature method works in conjunction with SignData method above, it accepts data, base64 encoded signature and `RsaPublicKeyParameters` serialized as json. It imports key, performs verification and returns a boolean result.
 
 We will start by creating an instance of RSA and importing key.
 ```csharp
 var rsa = RSA.Create();
+var rsaParameters = JsonConvert.DeserializeObject<RsaPublicKeyParameters>(publicKeyJson).ToRSAParameters();
 rsa.ImportParameters(rsaParameters);
 ```
 Call `VerifyData` method on `rsa` instance to decrypt data.

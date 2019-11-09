@@ -69,7 +69,7 @@ public string Encrypt(string plainText, string publicKeyJson)
 ```
 
 ### Decryption
-Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded string and private key serialized as json. It imports key, performs decryption and returns plain text.
+Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded string and `RsaPrivateKeyParameters` serialized as json. It imports key, performs decryption and returns plain text.
 
 We will start by creating an instance of RSA and importing key.
 ```csharp
