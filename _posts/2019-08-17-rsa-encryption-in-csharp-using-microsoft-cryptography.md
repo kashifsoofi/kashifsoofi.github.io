@@ -11,7 +11,7 @@ tags:
 Sample class library implementing RSA encryption using Microsoft's Cryptography Library
 
 ## Introduction
-**RSA (Rivest–Shamir–Adleman)** is a public-key cryptostystems. In such a cryptosystem, a pair of keys is used often called private and public key pair.
+**RSA (Rivest–Shamir–Adleman)** is a public-key cryptosystem. In such a cryptosystem, a pair of keys is used often called private and public key pair.
 
 Public key cryptosystems are used for 2 major use cases
 # Encryption
