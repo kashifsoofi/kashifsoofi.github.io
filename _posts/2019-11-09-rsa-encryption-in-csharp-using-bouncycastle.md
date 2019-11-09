@@ -83,7 +83,7 @@ public string Encrypt(string plainText, string publicKeyJson)
 ### Decryption
 Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded string and `RsaPrivateKeyParameters` serialized as json. It imports key, performs decryption and returns plain text.
 
-We will start by deserializing public key json and converting it to Bouncy Castle's `RsaPrivateKeyParameters`.
+We will start by deserializing private key json and converting it to Bouncy Castle's `RsaPrivateKeyParameters`.
 ```csharp
 var decryptionKey = JsonConvert.DeserializeObject<RsaPrivateKeyParameters>(privateKeyJson).ToRsaPrivateCrtKeyParameters();
 ```
