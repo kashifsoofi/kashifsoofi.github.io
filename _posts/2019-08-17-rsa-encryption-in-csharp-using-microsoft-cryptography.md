@@ -14,8 +14,8 @@ Sample class library implementing RSA encryption using Microsoft's Cryptography 
 **RSA (Rivest–Shamir–Adleman)** is a public-key cryptosystem. In such a cryptosystem, a pair of keys is used often called private and public key pair.
 
 Public key cryptosystems are used for 2 major use cases
-# Encryption
-# Verification
+1. Encryption
+2. Verification
 
 Focus of this article is encryption. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Encryption is always done with a public key, this ensures that only the owner of private key can access the data unencrypted and will remain private between the encrytor and owner of private key.
 

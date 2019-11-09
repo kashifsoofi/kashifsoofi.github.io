@@ -14,8 +14,8 @@ Sample class library implementing RSA signing using Microsoft's Cryptography Lib
 **RSA (Rivest–Shamir–Adleman)** is a public-key cryptosystem. In such a cryptosystem, a pair of keys is used often called private and public key pair.
 
 Public key cryptosystems are used for 2 major use cases
-# Encryption
-# Verification
+1. Encryption
+2. Verification
 
 Focus of this article is verification. With a public key cryptosystem, private key is always kept secure by the owner and public key is publically accessible. Process of verification involves signing of data with a private key that can be verified using associated public key. Signing is always done with a private key that is only accessible by owner. Verification is done using a public key accessible by any member of the public. Anybody can use it (public key) to verify a data signature, if successful meaning it is genuinely coming from the owner of the private key.
 
