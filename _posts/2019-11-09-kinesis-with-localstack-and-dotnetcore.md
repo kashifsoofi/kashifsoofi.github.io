@@ -54,7 +54,7 @@ var putRecordResponse = _kinesisClient.PutRecordAsync(putRecordRequest).GetAwait
 
 If you want to wait for stream to be available before starting to send messages, please have a look at [Amazon Kinesis Client Library for .NET](https://github.com/awslabs/amazon-kinesis-client-net)'s SampleProducer code.  
 
-## Message Consumer
+## Message Consumer using Kinesis Data Streams API
 Create a .NET Core Console application named `Demo.Consumer`. Add a message consumer service class inheriting from `BackgroundService`, override `ExecuteAsync` method to read data from `demo-stream` we used to put data messages using our producer application.  
 
 This method of consumer is using the same 'AWSSDK.Kinesis' nuget package. It makes a call to get all the shards of stream, then it gets an iterator on each shard to get all the records and print a console message. It is quite simple but consumer application has to pull the messages and also keep track of the data it has already processed. Our sample application would get all the messages on each run until the messages are available.  
@@ -121,7 +121,7 @@ private async Task ReadFromStream()
 }
 ```
 
-## Message Consumer using KCL
+## Message Consumer using Kinesis Client Library (KCL)
 We can also use Amazon Kinesis Client Library (KCL) for .NET to write message processor. This allows us to focus on processing records, as many of the tasks e.g. load balancing, checkpointing are handled by KCL.
 
 KCL for .NET is an interface to MultiLangDaemon which is provided as a part of [Amazon KCL for JAVA](https://github.com/awslabs/amazon-kinesis-client) and .NET KCL communicats with JAVA daemon.  
