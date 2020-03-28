@@ -35,6 +35,12 @@ Run MySql 5.6 in Docker container mapping host port 3306 to container
 `docker rmi $(docker images --filter "dangling=true" -q --no-trunc)`  
 Combine this with stop all containers to remove any running instances.  
 
+### Find a running container's id
+`docker ps -f "name=app1" --format "{{.ID}}"`  
+
+### Connect to container's shell
+`docker exec -it <container-id/name> sh/bash`  
+
 ## Docker Compose
 ### Run all containers
 The following command would use docker-compose.yml file in current directory  
