@@ -37,7 +37,7 @@ Combine this with stop all containers to remove any running instances.
 
 ## Docker Compose
 ### Run all containers
-The following command would use docker-compose.yml file in current directory
+The following command would use docker-compose.yml file in current directory  
 `docker-compose up`  
 Run in background  
 `docker-compose up -d`  
@@ -66,4 +66,4 @@ While development I ususally use the following command, it will remove any image
 `docker-compose -f docker-compose.custom.yml down -v --rmi local --remove-orphans`  
 
 ## References
-Countless...
+I usually do a google search to get the command I need and thankful to all the people who have documented any of the above in detail. For me this is a collation of all those efforts that I happen to use from time to time.
