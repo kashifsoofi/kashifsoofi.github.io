@@ -80,11 +80,6 @@ hash := sha256.New()
 plainTextBytes := []byte(plainText)
 ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, publicKey, plainTextBytes, nil)
 ```
-We then have to convert plain text to bytes and call `doFinal` method on `cipher` object to encrypt data.
-```java
-byte[] plainTextBytes = plainText.getBytes("UTF8");
-byte[] encryptedBytes = cipher.doFinal(plainTextBytes);
-```
 We then convert encrypted data to base64 string and return to caller.  
 
 Complete code for the method is below
