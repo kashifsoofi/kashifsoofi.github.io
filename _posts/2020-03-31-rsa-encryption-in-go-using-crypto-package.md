@@ -35,7 +35,6 @@ import (
 We would also need following pakcages to complete the implementation.
 ```go
 import (
-	"bytes"
 	base64 "encoding/base64"
 	"encoding/binary"
 	"encoding/json"
@@ -81,11 +80,6 @@ hash := sha256.New()
 plainTextBytes := []byte(plainText)
 ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, publicKey, plainTextBytes, nil)
 ```
-We then have to convert plain text to bytes and call `doFinal` method on `cipher` object to encrypt data.
-```java
-byte[] plainTextBytes = plainText.getBytes("UTF8");
-byte[] encryptedBytes = cipher.doFinal(plainTextBytes);
-```
 We then convert encrypted data to base64 string and return to caller.  
 
 Complete code for the method is below
@@ -114,18 +108,19 @@ func (crypto RsaCrypto) Encrypt(plainText string, publicKeyJson string) (string,
 ### Decryption
 Decrypt method works in conjunction with Encrypt method above, it accepts base64 encoded encrypted string and RsaPrivateKeyParameters serialized as json. It converts key to rsa.PrivateKey, performs decryption and returns plain text.  
 
-We will start by converting base64 encrypted data to byte array.  
-```go
-data, err := base64.StdEncoding.DecodeString(cipherText)
-```
-
-Then we will deserialize private key json and convert it to go package's `rsa.PrivateKey`.  
+We will start by deserialize private key json and convert it to go package's `rsa.PrivateKey`.  
 ```go
 var rsaPrivateKeyParameters RsaPrivateKeyParameters
 jsonBytes := []byte(privateKeyJson)
 err = json.Unmarshal(jsonBytes, &rsaPrivateKeyParameters)
 privateKey, err := rsaPrivateKeyParameters.toRsaPrivateKey()
 ```
+
+Next we will convert base64 encrypted data to byte array.  
+```go
+data, err := base64.StdEncoding.DecodeString(cipherText)
+```
+
 Next we will create an instane of `sha256` and call `DecryptOAEP` to decrypt encrypted data.  
 ```go
 hash := sha256.New()
