@@ -4,7 +4,7 @@ date:   2020-03-31
 categories:
   - cryptography
 tags:
-  - Java
+  - Go
   - rsa
   - crytpography
 ---
