@@ -35,7 +35,6 @@ import (
 We would also need following pakcages to complete the implementation.
 ```go
 import (
-	"bytes"
 	base64 "encoding/base64"
 	"encoding/binary"
 	"encoding/json"
