@@ -2,8 +2,8 @@
 comments:
     allowedFields: ["name", "email", "url", "message"]
     branch: "master"
-    commitMessage: "New user comment sent via staticman"
-    filename: "entry{@timestamp}"
+    commitMessage: "New comment by {fields.name}"
+    filename: "comment-{fields.name}-{@timestamp}"
     format: "yaml"
   
     # List of fields to be populated automatically by Staticman
@@ -16,6 +16,15 @@ comments:
     # Whether entries need to be appproved before they are published
     moderation: true
   
+    # Akismet spam detection.
+    akismet:
+      enabled: true
+      author: "name"
+      authorEmail: "email"
+      authorUrl: "url"
+      content: "message"
+      type: "comment"
+
     # Destination path (directory) for the data files. Accepts placeholders.
     path: "_data/comments/{options.slug}"
   
