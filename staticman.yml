@@ -1,0 +1,26 @@
+# based on https://github.com/eduardoboucas/staticman/blob/master/staticman.sample.yml
+comments:
+    allowedFields: ["name", "email", "url", "message"]
+    branch: "master"
+    commitMessage: "New user comment sent via staticman"
+    filename: "entry{@timestamp}"
+    format: "yaml"
+  
+    # List of fields to be populated automatically by Staticman
+    generatedFields:
+      date:
+        type: date
+        options:
+          format: "iso8601"
+  
+    # Whether entries need to be appproved before they are published
+    moderation: true
+  
+    # Destination path (directory) for the data files. Accepts placeholders.
+    path: "_data/comments/{options.slug}"
+  
+    # Names of required fields
+    requiredFields: ["name", "email", "message"]
+
+    transforms:
+        email: md5
