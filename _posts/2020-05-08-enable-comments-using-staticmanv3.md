@@ -1,8 +1,8 @@
 ---
 title:  "Enable comments using staticman v3"
-date:   2020-03-31
+date:   2020-05-08
 categories:
-  - cryptography
+  - blog
 tags:
   - staticman
   - minimal mistakes
