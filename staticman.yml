@@ -1,6 +1,6 @@
 # based on https://github.com/eduardoboucas/staticman/blob/master/staticman.sample.yml
 comments:
-    allowedFields: ["name", "email", "url", "message"]
+    allowedFields: ["name", "email", "url", "message", "replying_to"]
     branch: "master"
     commitMessage: "New comment by {fields.name}"
     filename: "comment-{fields.name}-{@timestamp}"
