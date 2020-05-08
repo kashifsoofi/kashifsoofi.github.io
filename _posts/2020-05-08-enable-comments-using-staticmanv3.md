@@ -34,7 +34,7 @@ Update `_config.yml` to set comment provider to `staticman_v2` and update `branc
 </figure>
 Please also make sure your `repository` value is also set correctly in `_config.yml` file.  
 ```
-repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
+repository: # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 ```
 
 ## Step 3. Hook up your forms
