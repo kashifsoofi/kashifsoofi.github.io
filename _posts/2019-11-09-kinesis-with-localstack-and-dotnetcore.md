@@ -2,12 +2,12 @@
 title:  "Amazon Kinesis with LocalStack and .NET Core"
 date:   2019-11-09
 categories:
-  - aspnetcore, aws, localstack
+  - aspnetcore, aws, LocalStack
 tags:
   - C#
   - aspnetcore
   - aws
-  - localstack
+  - LocalStack
 ---
 [Amazon Kinesis](https://aws.amazon.com/kinesis/) is a data stream processing service from Amazon that makes it possible to ingest and process high volumes of data in realtime.  
 
