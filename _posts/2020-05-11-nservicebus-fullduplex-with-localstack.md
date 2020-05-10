@@ -9,7 +9,7 @@ tags:
   - LocalStack
   - NServiceBus
 ---
-This is a repurposed [NServiceBus Full Duplex](https://docs.particular.net/samples/fullduplex/) using SQS and SNS transport.
+This is a follow up post to [NServiceBus Full Duplex With LocalStack SQS and InMemory Persistence](https://kashifsoofi.github.io/aspnetcore,%20aws,%20localstack,%20nservicebus/nservicebus-fullduplex-with-localstack/), this is a repurposed [NServiceBus Full Duplex](https://docs.particular.net/samples/fullduplex/) using SQS and SNS transport instead of using InMemory Persistence.
 
 ## NServiceBus
 [NServiceBus](https://particular.net/nservicebus) is a service bus implementation for .NET. As a developer, it helps you create decoupled applications that are easier to maintain, extend and scale horizontally.
