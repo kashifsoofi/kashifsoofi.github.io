@@ -163,7 +163,7 @@ In GetById endpoint we will try to get a movie from store, if the method returne
     }
 ```
 
-#### Create Movie `POST /api/movies`
+#### Create Movie `POST /api/movies/{id}`
 For create movie, we would receive some data from the API caller, I like to add a model for request that only contain data that we are expecting from the caller. It also helps to apply Validation attributes only on the model that is being used in the controller. Once we have received the data we can convert it to store's `CreateMovieParams` and call method to store the resource. Following is the code for handler after the update
 ```csharp
     [HttpPost]
@@ -192,7 +192,7 @@ For create movie, we would receive some data from the API caller, I like to add 
 ```
 Again you can use AutoMapper to map request to `CreateMovieParams`. Also I have used a custom exception `DuplicateKeyException` to identify if it was a duplicate record. If we use database we should tranlate sql driver exception to this exception to keep our controller code idenpendent of the underlaying storage being used.
 
-#### Update Movie
+#### Update Movie `PUT /api/movies/{id}`
 Same as create, we would receive some data from API caller, I have added another class to get update request data. Once we receive the request we call store's `Update` method to update movie. Following is the code for handler after the update
 ```csharp
     [HttpPut("{id}")]
@@ -219,7 +219,7 @@ Same as create, we would receive some data from API caller, I have added another
     }
 ```
 
-#### Delete Movie
+#### Delete Movie `DELETE /api/movies/{id}`
 Final operation supported by our REST API, delete movie. We simply call the `Delete` method on our store and return `NotFound` if record is not found or `OK` if deletion is successful.
 ```csharp
     [HttpDelete("{id}")]
