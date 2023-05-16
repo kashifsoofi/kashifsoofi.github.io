@@ -1,5 +1,5 @@
 ---
-title:  "AspNet Core WebApp behind Kong Gateway (or any other proxy)"
+title:  "REST API using C# .NET 7 with InMemory Store"
 date:   2023-05-15
 categories:
   - aspnetcore
@@ -18,24 +18,24 @@ Focus of this tutorial to write a REST API using C# .NET.
 
 ## Create Web API Project
 I am using Visual Studio 2022 for Mac on an Intel MacBook Pro.
-1. Select New -> App -> API project
+* Select New -> App -> API project
 <figure>
   <a href="/assets/images/2023-05-15/001-select-template.png"><img src="/assets/images/2023-05-15/001-select-template.png"></a>
   <figcaption>Select API Project Template.</figcaption>
 </figure>  
-2. Configure API as below, I have not configured to use HTTPS for simplicity
+* Configure API as below, I have not configured to use HTTPS for simplicity
 <figure>
   <a href="/assets/images/2023-05-15/002-configure-api.png"><img src="/assets/images/2023-05-15/002-configure-api.png"></a>
   <figcaption>Configure API Project.</figcaption>
 </figure>  
-3. Name your project, I prefer to name my API project as [AggregateName].Api and name solution as [Aggregate Name], this comes from the Domain Driven Design, for this tutorial we are creating a REST API for Movies.
+* Name your project, I prefer to name my API project as [AggregateName].Api and name solution as [Aggregate Name], this comes from the Domain Driven Design, for this tutorial we are creating a REST API for Movies.
 <figure>
   <a href="/assets/images/2023-05-15/003-name-project.png"><img src="/assets/images/2023-05-15/003-name-project.png"></a>
   <figcaption>Name API Project.</figcaption>
 </figure>  
-4. Click the `Create` button would create the project.
-5. Right click on Dependencies and update nuget packages in Solution explorer.
-6. Clicking Run button would run the API and show the following
+* Click the `Create` button would create the project.
+* Right click on Dependencies and update nuget packages in Solution explorer.
+* Clicking Run button would run the API and show the following
 <figure>
   <a href="/assets/images/2023-05-15/004-swagger-ui.png"><img src="/assets/images/2023-05-15/004-swagger-ui.png"></a>
   <figcaption>Movies API Swagger UI.</figcaption>
