@@ -244,7 +244,7 @@ Final operation supported by our REST API, delete movie. We simply call the `Del
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
 ## Source
-Source code for the demo application is hosted on GitHub in [movies-api-cs](https://github.com/kashifsoofi/movies-api-cs) repository.  
+Source code for the demo application is hosted on GitHub in [movies-api-cs](https://github.com/kashifsoofi/movies-api-cs/tree/rest-api-with-in-memory-store) repository.  
 
 ## References
 In no particular order  
