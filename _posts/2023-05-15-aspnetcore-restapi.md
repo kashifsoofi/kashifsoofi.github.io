@@ -55,11 +55,11 @@ Here is an excellent [article](Adding health checks with Liveness, Readiness, an
 Lets add a health check to our service.
 
 - Register health check services
-```
+```csharp
 builder.Services.AddHealthChecks();
 ```
 - Map health checks endpoints
-```
+```csharp
 app.MapHealthChecks("/healthz");
 ```
 After running and going to this endpoint browser should show OK.  
@@ -87,11 +87,11 @@ public class Movie
 ```
 ### Define supported API Operations
 Lets also define the endpoints and operations that we are going to support in this API.
-- `GET /movies` - Return all movies (in a production environment always implement pagging for this operation)
-- `GET /movies/{id}` - Return a single movie by id in path parameter
-- `POST /movies` - Create a new movie
-- `PUT /movies/{id}` - Update a movie identified by id in path parameter
-- 'DELETE /movies/{id}` - Delete a movie by id in path parameter
+- `GET /api/movies` - Return all movies (in a production environment always implement pagging for this operation)
+- `GET /api/movies/{id}` - Return a single movie by id in path parameter
+- `POST /api/movies` - Create a new movie
+- `PUT /api/movies/{id}` - Update a movie identified by id in path parameter
+- `DELETE /api/movies/{id}` - Delete a movie by id in path parameter
 
 ### Store
 This is a very simple CRUD API if there are more complex operations or business logic involved we would add another `Services` layer between `Controller` and `Store`. But adding just a storage layer is enough for the purpose of this tutorial.
@@ -131,7 +131,7 @@ Lets start by adding a variable and a constructor to set that variable, ASP.NET'
     }
 ```
 
-#### Get All
+#### Get All `GET /api/movies`
 Lets implement Get All endpoint `GET /movies`, first get a list of movies from store that would be of type `Store.Movie`, since we are returning `Domain.Movie`, we would need to convert to `Domain.Movie` type, I have implemented a constructor in `Domain.Movie` class that takes `Store.Movie` object as input and sets all the fields. This can be automated using [AutoMapper](https://automapper.org/) or [Boxed.Mapping](https://www.nuget.org/packages/Boxed.Mapping/). I have also added attributes to generate Swagger for the endpoints.
 ```csharp
     [HttpGet]
@@ -144,7 +144,7 @@ Lets implement Get All endpoint `GET /movies`, first get a list of movies from s
     }
 ```
 
-#### Get By Id
+#### Get By Id `GET /api/movies/{id}`
 In GetById endpoint we will try to get a movie from store, if the method returned `null` we would return HTTP status code `404 NotFound` to the caller of the API, if found we would convert the result to `Domain.Movie` and return it with `200 OK`.
 ```csharp
     [HttpGet("{id}")]
@@ -163,7 +163,7 @@ In GetById endpoint we will try to get a movie from store, if the method returne
     }
 ```
 
-#### Create Movie
+#### Create Movie `POST /api/movies`
 For create movie, we would receive some data from the API caller, I like to add a model for request that only contain data that we are expecting from the caller. It also helps to apply Validation attributes only on the model that is being used in the controller. Once we have received the data we can convert it to store's `CreateMovieParams` and call method to store the resource. Following is the code for handler after the update
 ```csharp
     [HttpPost]
