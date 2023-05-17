@@ -43,6 +43,9 @@ Open a terminal at the root of the solution where docker-compose file is locatio
 docker-compose -f docker-compose.dev-env.yml up -d
 ```
 
+## Database Migrations
+Before we can start using Postgres we need to create a table to store our data. I will be using excellent [roundhouse](https://github.com/chucknorris/roundhouse) database deployment system to execute database migrations.
+
 ## Test
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
