@@ -1,6 +1,6 @@
 ---
 title:  "REST API using C# .NET 7 with Postgres"
-date:   2023-05-17
+date:   2023-05-18
 categories:
   - aspnetcore
   - rest
@@ -28,6 +28,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=Password123
       - POSTGRES_DB=moviesdb
+    volumes:
+      - moviesdbdata:/var/lib/postgresql/data/
     ports:
       - “5432:5432”
     restart: on-failure
@@ -36,6 +38,9 @@ services:
       timeout: 10s
       interval: 5s
       retries: 10
+
+volumes:
+  moviesdbdata:
 ```
 
 Open a terminal at the root of the solution where docker-compose file is location and execute following command to start database server.
@@ -46,6 +51,34 @@ docker-compose -f docker-compose.dev-env.yml up -d
 ## Database Migrations
 Before we can start using Postgres we need to create a table to store our data. I will be using excellent [roundhouse](https://github.com/chucknorris/roundhouse) database deployment system to execute database migrations.
 
+I usually create a container that has all database migrations and tool to execute those migrations. I name migrations as [yyyyMMdd-HHmm-migration-name.sql] but please feel free to use any naming scheme, keep in mind how the tool would order multiple files to run those migrations. I have also added a `wait-for-db.csx` file that I would use as the entry point for database migrations container. This is a `dotnet-script` file and would be run using [dotnet-script](https://github.com/dotnet-script/dotnet-script). I have pinned the versions that are compatible with .net sdk 3.1 as this the version `roundhouse` is build against at the time of writing.
+
+For migration, I have added following under `db\up` folder.
+- `20230518_1800_extension_uuid_ossp_create.sql`
+```sql
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+```
+- `20230518_1801_table_movies_create.sql`
+```sql
+CREATE TABLE IF NOT EXISTS movies (
+    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(100) NOT NULL,
+    director VARCHAR(100) NOT NULL,
+    release_date TIMESTAMP NOT NULL,
+    ticket_price DECIMAL(12, 2) NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL
+)
+```
+
+Open a terminal at the root of the solution where docker-compose file is location and execute following command to start database server and apply migrations to create `uuid-ossp` extension and `movies` table.
+```shell
+docker-compose -f docker-compose.dev-env.yml up -d
+```
+
+## Postgres Movies Store
+I will be using [Dapper](https://github.com/DapperLib/Dapper) - a simple object mapper for .Net along with [Npgsql](https://www.npgsql.org/doc/index.html).
+
 ## Test
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
@@ -55,5 +88,9 @@ Source code for the demo application is hosted on GitHub in [movies-api-cs](http
 ## References
 In no particular order  
 * [REST API using C# .NET 7 with InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/aspnetcore-restapi/)
-* [Postgres Database](https://www.postgresql.org/)  
+* [Postgres Database](https://www.postgresql.org/)
+* [roundhouse](https://github.com/chucknorris/roundhouse)
+* [dotnet-script](https://github.com/dotnet-script/dotnet-script)
+* [Dapper](https://github.com/DapperLib/Dapper)
+* [Npgsql](https://www.npgsql.org/doc/index.html)
 * And many more
