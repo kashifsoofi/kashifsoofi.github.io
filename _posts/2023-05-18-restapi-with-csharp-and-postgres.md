@@ -89,6 +89,18 @@ CREATE TABLE IF NOT EXISTS movies (
 )
 ```
 
+Add following in `docker-compose.dev-env.yml` file to add migrations container and run migrations on startup. Please remember if you add new migrations, you would need to delete container and `movies.db.migrations` image to add new migration files in the container.
+```yaml
+  movies.db.migrations:
+    depends_on:
+      - movies.db
+    image: movies.db.migrations
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    command: '"Host=movies.db;Username=postgres;Password=Password123;Database=moviesdb;Integrated Security=false;"'
+```
+
 Open a terminal at the root of the solution where docker-compose file is location and execute following command to start database server and apply migrations to create `uuid-ossp` extension and `movies` table.
 ```shell
 docker-compose -f docker-compose.dev-env.yml up -d
