@@ -53,6 +53,24 @@ Before we can start using Postgres we need to create a table to store our data. 
 
 I usually create a container that has all database migrations and tool to execute those migrations. I name migrations as [yyyyMMdd-HHmm-migration-name.sql] but please feel free to use any naming scheme, keep in mind how the tool would order multiple files to run those migrations. I have also added a `wait-for-db.csx` file that I would use as the entry point for database migrations container. This is a `dotnet-script` file and would be run using [dotnet-script](https://github.com/dotnet-script/dotnet-script). I have pinned the versions that are compatible with .net sdk 3.1 as this the version `roundhouse` is build against at the time of writing.
 
+Dockerfile to run database migrations
+```yaml
+FROM mcr.microsoft.com/dotnet/sdk:3.1-alpine
+
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+RUN dotnet tool install -g dotnet-script --version 1.1.0
+RUN dotnet tool install -g dotnet-roundhouse --version 1.3.1
+
+WORKDIR /db
+
+# Copy all db files
+COPY . .
+
+ENTRYPOINT ["dotnet-script", "wait-for-db.csx", "--", "rh", "--silent", "--dt", "postgres", "-cs"]
+CMD ["Host=movies.db;Username=postgres;Password=Password123;Database=moviesdb;Integrated Security=false;"]
+```
+
 For migration, I have added following under `db\up` folder.
 - `20230518_1800_extension_uuid_ossp_create.sql`
 ```sql
