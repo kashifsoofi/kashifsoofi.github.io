@@ -79,6 +79,221 @@ docker-compose -f docker-compose.dev-env.yml up -d
 ## Postgres Movies Store
 I will be using [Dapper](https://github.com/DapperLib/Dapper) - a simple object mapper for .Net along with [Npgsql](https://www.npgsql.org/doc/index.html).
 
+### Setup
+* Lets start by adding nuget packages
+```shell
+dotnet add package Npgsql --version 8.0.0-preview.4
+dotnet add package Dapper --version 2.0.123
+```
+* Update `IMovieStore` and make all methods `async`.
+* Update `Controller` to make methods `async` and `await` calls to store methods
+* Update `InMemoryMoviesStore` to make methods `async`
+
+### SqlHelper
+I have added a helper class under `Store` folder named `SqlHelper`. It loads embedded resources under the `Sql` folder with extension `.sql` where the class containing the instance of thhe helper is. Reason for this is I like to have each `SQL` query in its own file. Feel free to put the query directly in the methods.
+
+### Class and Constructor
+Add a new folder under `Store`, I named it as `Postgres` and add a file named `PostgresMoviesStore.cs`. This class would accept an `IConfiguration` as parameter that we would use to load postgres connection string from .NET configuration. We would initialize `connectionString` and `sqlHelper` member variables in constructor.
+```csharp
+public PostgresMoviesStore(IConfiguration configuration)
+{
+    var connectionString = configuration.GetConnectionString("MoviesDb");
+    if (connectionString == null)
+    {
+        throw new InvalidOperationException("Missing [MoviesDb] connection string.");
+    }
+
+    this.connectionString = connectionString;
+    sqlHelper = new SqlHelper<PostgresMoviesStore>();
+}
+```
+
+I have specified this in `appsettings.json` configuration file. This is acceptable for development but NEVER put a production/stagging connection string in a configuration file. This can be put in secure vault e.g. AWS Parameter Store or Azure KeyVault and can be accessed from the application. CD pipeline can also be configured to load this value from a secure location and set as an environment variable for the container running the application.
+
+### Create
+We create a new instance of `NpgsqlConnection`, setup parameters for create and execute the query using `Dapper` to insert a new record, we are handling a `NpgsqlException` and throw our custom `DuplicateKeyException` if `SqlState` of exception is `23505`.
+Create function looks like
+```csharp
+public async Task Create(CreateMovieParams createMovieParams)
+{
+    await using var connection = new NpgsqlConnection(connectionString);
+    {
+        var parameters = new
+        {
+            id = createMovieParams.Id,
+            title = createMovieParams.Title,
+            director = createMovieParams.Director,
+            release_date = createMovieParams.ReleaseDate,
+            ticket_price = createMovieParams.TicketPrice,
+            created_at = DateTime.UtcNow,
+            updated_at = DateTime.UtcNow,
+        };
+
+        try
+        {
+            await connection.ExecuteAsync(
+                this.sqlHelper.GetSqlFromEmbeddedResource("Create"),
+                parameters,
+                commandType: CommandType.Text);
+        }
+        catch (NpgsqlException ex)
+        {
+            if (ex.SqlState == "23505")
+            {
+                throw new DuplicateKeyException();
+            }
+
+            throw;
+        }
+    }
+}
+```
+And corresponding sql query from `Create.sql` file
+```sql
+INSERT INTO movies(
+    id,
+    title,
+    director,
+    release_date,
+    ticket_price,
+    created_at,
+    updated_at
+)
+VALUES (
+    @id,
+    @title,
+    @director,
+    @release_date,
+    @ticket_price,
+    @created_at,
+    @updated_at
+)
+```
+
+Please note the column names and parameter names to conform to postgresql conventions.
+
+### GetAll
+We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query, dapper would map the columns to properties.
+```csharp
+public async Task<IEnumerable<Movie>> GetAll()
+{
+    await using var connection = new NpgsqlConnection(connectionString);
+    return await connection.QueryAsync<Movie>(
+        sqlHelper.GetSqlFromEmbeddedResource("GetAll"),
+        commandType: CommandType.Text
+        );
+}
+```
+And corresponding sql query from `GetAll.sql` file
+```sql
+SELECT
+    id,
+    title,
+    director,
+    ticket_price as TicketPrice,
+    release_date as ReleaseDate,
+    created_at as CreatedAt,
+    updated_at as UpdatedAt
+FROM movies
+```
+Please note the column alias in the `SELECT` this is required as `Dapper` at the time of reading does not support mapping snake_case columns to camelCase/PascalCase property names.
+
+### GetById
+We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query by passing the id, dapper would map the columns to properties.
+```csharp
+public async Task<Movie?> GetById(Guid id)
+{
+    await using var connection = new NpgsqlConnection(connectionString);
+    return await connection.QueryFirstOrDefaultAsync<Movie?>(
+        sqlHelper.GetSqlFromEmbeddedResource("GetById"),
+        new { id },
+        commandType: System.Data.CommandType.Text
+        );
+}
+```
+And coresponding sql from `GetById.sql` file
+```sql
+SELECT
+    id,
+    title,
+    director,
+    ticket_price as TicketPrice,
+    release_date as ReleaseDate,
+    created_at as CreatedAt,
+    updated_at as UpdatedAt
+FROM movies
+WHERE id = @id
+```
+
+### Update
+We create a new instance of `NpgsqlConnection`, setup parameters for query and execute the query using `Dapper` to update an existing record.
+
+Create function looks like
+```csharp
+public async Task Update(Guid id, UpdateMovieParams updateMovieParams)
+{
+    await using var connection = new NpgsqlConnection(connectionString);
+    {
+        var parameters = new
+        {
+            id = id,
+            title = updateMovieParams.Title,
+            director = updateMovieParams.Director,
+            release_date = updateMovieParams.ReleaseDate,
+            ticket_price = updateMovieParams.TicketPrice,
+            updated_at = DateTime.UtcNow,
+        };
+
+        await connection.ExecuteAsync(
+            this.sqlHelper.GetSqlFromEmbeddedResource("Update"),
+            parameters,
+            commandType: CommandType.Text);
+    }
+}
+```
+And corresponding sql query from `Update.sql` file
+```sql
+UPDATE movies
+SET
+    title = @title,
+    director = @director,
+    release_date = @release_date,
+    ticket_price = @ticket_price,
+    updated_at = @updated_at
+WHERE id = @id
+```
+
+### Delete
+We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query by passing the id, dapper would map the columns to properties.
+```csharp
+public async Task Delete(Guid id)
+{
+    await using var connection = new NpgsqlConnection(connectionString);
+    await connection.ExecuteAsync(
+        sqlHelper.GetSqlFromEmbeddedResource("Delete"),
+        new { id },
+        commandType: CommandType.Text
+        );
+}
+```
+And corresponding sql query from `Delete.sql` file
+```sql
+DELETE
+FROM movies
+WHERE id = @id
+```
+
+Please note we don't throw `RecordNotFoundException` exception as we were doing in `InMemoryMoviesStore`, reason for that is trying to delete a record with a non existent key is not considered an error in Postgres.
+
+## Setup Dependency Injection
+Final step is to setup the Dependency Injection container to wireup the new created store. Update `Program.cs` as shown below
+```csharp
+// builder.Services.AddSingleton<IMoviesStore, InMemoryMoviesStore>();
+builder.Services.AddScoped<IMoviesStore, PostgresMoviesStore>();
+```
+
+For simplicity I have disabled `InMemoryMoviesStore`, we can add a configuration and based on that decide which service to use at runtime. That can be a good exercise however we don't do that practically. However for traffic heavy services InMemory or Distributed Cache is used to cache results to improve performance.
+
 ## Test
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
@@ -93,4 +308,5 @@ In no particular order
 * [dotnet-script](https://github.com/dotnet-script/dotnet-script)
 * [Dapper](https://github.com/DapperLib/Dapper)
 * [Npgsql](https://www.npgsql.org/doc/index.html)
+* [SqlState 23505](https://stackoverflow.com/questions/24390820/postgresql-error-23505-duplicate-key-value-violates-unique-constraint-foo-col)
 * And many more
