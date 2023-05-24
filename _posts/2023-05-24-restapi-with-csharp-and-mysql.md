@@ -323,7 +323,7 @@ For simplicity I have disabled `InMemoryMoviesStore`, we can add a configuration
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
 ## Source
-Source code for the demo application is hosted on GitHub in [movies-api-cs](https://github.com/kashifsoofi/movies-api-cs/tree/rest-api-with-postgres) repository.
+Source code for the demo application is hosted on GitHub in [movies-api-cs]https://github.com/kashifsoofi/movies-api-cs/tree/rest-api-with-mysql) repository.
 
 ## References
 In no particular order
