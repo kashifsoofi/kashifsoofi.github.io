@@ -1,5 +1,5 @@
 ---
-title:  "REST API using C# .NET 7 with InMemory Store"
+title:  "REST API with ASP.NET Core 7 and InMemory Store"
 date:   2023-05-15
 categories:
   - aspnetcore
@@ -244,7 +244,7 @@ Final operation supported by our REST API, delete movie. We simply call the `Del
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
 ## Source
-Source code for the demo application is hosted on GitHub in [movies-api-cs](https://github.com/kashifsoofi/movies-api-cs/tree/rest-api-with-in-memory-store) repository.  
+Source code for the demo application is hosted on GitHub in [blog-code-samples](https://github.com/kashifsoofi/blog-code-samples/tree/main/restapi-with-asp.net-core-7-and-inmemory-store) repository.  
 
 ## References
 In no particular order  
