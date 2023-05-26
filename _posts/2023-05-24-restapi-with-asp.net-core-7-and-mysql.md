@@ -1,6 +1,6 @@
 ---
-title:  "REST API using C# .NET 7 with Postgres"
-date:   2023-05-18
+title:  "REST API using ASP.NET Core 7 with MySql"
+date:   2023-05-24
 categories:
   - aspnetcore
   - rest
@@ -12,10 +12,10 @@ tags:
   - api
 ---
 
-This is a continuation of an earlier post [REST API using C# .NET 7 with InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/restapi-with-csharp/). In this tutorial I will extend the service to store data in a [Postgres Database](https://www.postgresql.org/). I will use [Docker](https://www.docker.com/) to run Postgres and use the same to run database migrations.
+This is a continuation of an earlier post [REST API with ASP.NET Core 7 and InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/restapi-with-asp.net-core-7-and-inmemory-store/). In this tutorial I will extend the service to store data in a [MySQL Database](https://www.mysql.com/). I will use [Docker](https://www.docker.com/) to run MySQL and use the same to run database migrations.
 
 ## Setup Database Server
-I will be using a docker-compose to run Postgres in a docker container. This would allow us the add more services that our rest api is depenedent on e.g. redis server for distributed caching.
+I will be using a docker-compose to run MySQL in a docker container. This would allow us the add more services that our rest api is depenedent on e.g. redis server for distributed caching.
 
 Let's start by adding a new file by right clicking on Solution name in Visual Studio and Add New File. I like to name file as `docker-compose.dev-env.yml`, feel free to name it as you like. Add following content to add a database instance for movies rest api.
 ```yaml
@@ -23,21 +23,14 @@ version: '3.7'
 
 services:
   movies.db:
-    image: postgres:14-alpine
+    image: mysql:5.7
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=Password123
-      - POSTGRES_DB=moviesdb
+      - MYSQL_DATABASE=defaultdb
+      - MYSQL_ROOT_PASSWORD=Password123
     volumes:
       - moviesdbdata:/var/lib/postgresql/data/
     ports:
-      - “5432:5432”
-    restart: on-failure
-    healthcheck:
-      test: [ “CMD-SHELL”, “pg_isready -q -d $${POSTGRES_DB} -U $${POSTGRES_USER}“]
-      timeout: 10s
-      interval: 5s
-      retries: 10
+      - "33060:3306"
 
 volumes:
   moviesdbdata:
@@ -72,21 +65,24 @@ CMD ["Host=movies.db;Username=postgres;Password=Password123;Database=moviesdb;In
 ```
 
 For migration, I have added following under `db\up` folder.
-- `20230518_1800_extension_uuid_ossp_create.sql`
+- `20230523_1800_schema_create.sql`
 ```sql
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE SCHEMA IF NOT EXISTS Movies;
 ```
-- `20230518_1801_table_movies_create.sql`
+- `20230523_1801_table_movies_create.sql`
 ```sql
-CREATE TABLE IF NOT EXISTS movies (
-    id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(100) NOT NULL,
-    director VARCHAR(100) NOT NULL,
-    release_date TIMESTAMP NOT NULL,
-    ticket_price DECIMAL(12, 2) NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL,
-    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() AT TIME ZONE 'utc') NOT NULL
-)
+USE Movies;
+
+CREATE TABLE IF NOT EXISTS Movies (
+    Id          CHAR(36)        NOT NULL UNIQUE,
+    Title       VARCHAR(100)    NOT NULL,
+    Director    VARCHAR(100)    NOT NULL,
+    ReleaseDate DATETIME        NOT NULL,
+    TicketPrice DECIMAL(12, 4)  NOT NULL,
+    CreatedAt   DATETIME        NOT NULL,
+    UpdatedAt   DATETIME        NOT NULL,
+    PRIMARY KEY (Id)
+) ENGINE=INNODB;
 ```
 
 Add following in `docker-compose.dev-env.yml` file to add migrations container and run migrations on startup. Please remember if you add new migrations, you would need to delete container and `movies.db.migrations` image to add new migration files in the container.
@@ -98,21 +94,21 @@ Add following in `docker-compose.dev-env.yml` file to add migrations container a
     build:
       context: ./db/
       dockerfile: Dockerfile
-    command: '"Host=movies.db;Username=postgres;Password=Password123;Database=moviesdb;Integrated Security=false;"'
+    command: '"server=movies.db;database=defaultdb;uid=root;password=Password123;SslMode=None;"'
 ```
 
-Open a terminal at the root of the solution where docker-compose file is location and execute following command to start database server and apply migrations to create `uuid-ossp` extension and `movies` table.
+Open a terminal at the root of the solution where docker-compose file is location and execute following command to start database server and apply migrations to create schema and `movies` table.
 ```shell
 docker-compose -f docker-compose.dev-env.yml up -d
 ```
 
-## Postgres Movies Store
-I will be using [Dapper](https://github.com/DapperLib/Dapper) - a simple object mapper for .Net along with [Npgsql](https://www.npgsql.org/doc/index.html).
+## MySql Movies Store
+I will be using [Dapper](https://github.com/DapperLib/Dapper) - a simple object mapper for .Net along with [MySqlConnector](https://mysqlconnector.net/).
 
 ### Setup
 * Lets start by adding nuget packages
 ```shell
-dotnet add package Npgsql --version 8.0.0-preview.4
+dotnet add package MySqlConnector --version 2.2.6
 dotnet add package Dapper --version 2.0.123
 ```
 * Update `IMovieStore` and make all methods `async`.
@@ -123,9 +119,9 @@ dotnet add package Dapper --version 2.0.123
 I have added a helper class under `Store` folder named `SqlHelper`. It loads embedded resources under the `Sql` folder with extension `.sql` where the class containing the instance of thhe helper is. Reason for this is I like to have each `SQL` query in its own file. Feel free to put the query directly in the methods.
 
 ### Class and Constructor
-Add a new folder under `Store`, I named it as `Postgres` and add a file named `PostgresMoviesStore.cs`. This class would accept an `IConfiguration` as parameter that we would use to load postgres connection string from .NET configuration. We would initialize `connectionString` and `sqlHelper` member variables in constructor.
+Add a new folder under `Store`, I named it as `MySql` and add a file named `MySqlMoviesStore.cs`. This class would accept an `IConfiguration` as parameter that we would use to load MySql connection string from .NET configuration. We would initialize `connectionString` and `sqlHelper` member variables in constructor.
 ```csharp
-public PostgresMoviesStore(IConfiguration configuration)
+public MySqlMoviesStore(IConfiguration configuration)
 {
     var connectionString = configuration.GetConnectionString("MoviesDb");
     if (connectionString == null)
@@ -134,29 +130,29 @@ public PostgresMoviesStore(IConfiguration configuration)
     }
 
     this.connectionString = connectionString;
-    sqlHelper = new SqlHelper<PostgresMoviesStore>();
+    sqlHelper = new SqlHelper<MySqlMoviesStore>();
 }
 ```
 
 I have specified this in `appsettings.json` configuration file. This is acceptable for development but NEVER put a production/stagging connection string in a configuration file. This can be put in secure vault e.g. AWS Parameter Store or Azure KeyVault and can be accessed from the application. CD pipeline can also be configured to load this value from a secure location and set as an environment variable for the container running the application.
 
 ### Create
-We create a new instance of `NpgsqlConnection`, setup parameters for create and execute the query using `Dapper` to insert a new record, we are handling a `NpgsqlException` and throw our custom `DuplicateKeyException` if `SqlState` of exception is `23505`.
+We create a new instance of `MySqlConnection`, setup parameters for create and execute the query using `Dapper` to insert a new record, we are handling a `NpgsqlException` and throw our custom `DuplicateKeyException` if `ErrorCode` of exception is `DuplicateKeyEntry`.
 Create function looks like
 ```csharp
 public async Task Create(CreateMovieParams createMovieParams)
 {
-    await using var connection = new NpgsqlConnection(connectionString);
+    await using var connection = new MySqlConnection(this.connectionString);
     {
         var parameters = new
         {
-            id = createMovieParams.Id,
-            title = createMovieParams.Title,
-            director = createMovieParams.Director,
-            release_date = createMovieParams.ReleaseDate,
-            ticket_price = createMovieParams.TicketPrice,
-            created_at = DateTime.UtcNow,
-            updated_at = DateTime.UtcNow,
+            createMovieParams.Id,
+            createMovieParams.Title,
+            createMovieParams.Director,
+            createMovieParams.ReleaseDate,
+            createMovieParams.TicketPrice,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
         };
 
         try
@@ -166,9 +162,9 @@ public async Task Create(CreateMovieParams createMovieParams)
                 parameters,
                 commandType: CommandType.Text);
         }
-        catch (NpgsqlException ex)
+        catch (MySqlException ex)
         {
-            if (ex.SqlState == "23505")
+            if (ex.ErrorCode == MySqlErrorCode.DuplicateKeyEntry)
             {
                 throw new DuplicateKeyException();
             }
@@ -180,34 +176,34 @@ public async Task Create(CreateMovieParams createMovieParams)
 ```
 And corresponding sql query from `Create.sql` file
 ```sql
-INSERT INTO movies(
-    id,
-    title,
-    director,
-    release_date,
-    ticket_price,
-    created_at,
-    updated_at
+INSERT INTO Movies(
+    Id,
+    Title,
+    Director,
+    ReleaseDate,
+    TicketPrice,
+    CreatedAt,
+    UpdatedAt
 )
 VALUES (
-    @id,
-    @title,
-    @director,
-    @release_date,
-    @ticket_price,
-    @created_at,
-    @updated_at
+    @Id,
+    @Title,
+    @Director,
+    @ReleaseDate,
+    @TicketPrice,
+    @CreatedAt,
+    @UpdatedAt
 )
 ```
 
-Please note the column names and parameter names to conform to postgresql conventions.
+Please note the column names and parameter names should match casing as defined in database `up` scripts.
 
 ### GetAll
-We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query, dapper would map the columns to properties.
+We create a new instance of `MySqlConnection`, use `Dapper` to execute query, dapper would map the columns to properties.
 ```csharp
 public async Task<IEnumerable<Movie>> GetAll()
 {
-    await using var connection = new NpgsqlConnection(connectionString);
+    await using var connection = new MySqlConnection(this.connectionString);
     return await connection.QueryAsync<Movie>(
         sqlHelper.GetSqlFromEmbeddedResource("GetAll"),
         commandType: CommandType.Text
@@ -217,23 +213,22 @@ public async Task<IEnumerable<Movie>> GetAll()
 And corresponding sql query from `GetAll.sql` file
 ```sql
 SELECT
-    id,
-    title,
-    director,
-    ticket_price as TicketPrice,
-    release_date as ReleaseDate,
-    created_at as CreatedAt,
-    updated_at as UpdatedAt
-FROM movies
+    Id,
+    Title,
+    Director,
+    TicketPrice,
+    ReleaseDate,
+    CreatedAt,
+    UpdatedAt
+FROM Movies
 ```
-Please note the column alias in the `SELECT` this is required as `Dapper` at the time of reading does not support mapping snake_case columns to camelCase/PascalCase property names.
 
 ### GetById
-We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query by passing the id, dapper would map the columns to properties.
+We create a new instance of `MySqlConnection`, use `Dapper` to execute query by passing the id, dapper would map the columns to properties.
 ```csharp
 public async Task<Movie?> GetById(Guid id)
 {
-    await using var connection = new NpgsqlConnection(connectionString);
+    await using var connection = new MySqlConnection(this.connectionString);
     return await connection.QueryFirstOrDefaultAsync<Movie?>(
         sqlHelper.GetSqlFromEmbeddedResource("GetById"),
         new { id },
@@ -244,34 +239,34 @@ public async Task<Movie?> GetById(Guid id)
 And coresponding sql from `GetById.sql` file
 ```sql
 SELECT
-    id,
-    title,
-    director,
-    ticket_price as TicketPrice,
-    release_date as ReleaseDate,
-    created_at as CreatedAt,
-    updated_at as UpdatedAt
-FROM movies
-WHERE id = @id
+    Id,
+    Title,
+    Director,
+    TicketPrice,
+    ReleaseDate,
+    CreatedAt,
+    UpdatedAt
+FROM Movies
+WHERE Id = @Id
 ```
 
 ### Update
-We create a new instance of `NpgsqlConnection`, setup parameters for query and execute the query using `Dapper` to update an existing record.
+We create a new instance of `MySqlConnection`, setup parameters for query and execute the query using `Dapper` to update an existing record.
 
-Create function looks like
+Update function looks like
 ```csharp
 public async Task Update(Guid id, UpdateMovieParams updateMovieParams)
 {
-    await using var connection = new NpgsqlConnection(connectionString);
+    await using var connection = new MySqlConnection(this.connectionString);
     {
         var parameters = new
         {
-            id = id,
-            title = updateMovieParams.Title,
-            director = updateMovieParams.Director,
-            release_date = updateMovieParams.ReleaseDate,
-            ticket_price = updateMovieParams.TicketPrice,
-            updated_at = DateTime.UtcNow,
+            Id = id,
+            updateMovieParams.Title,
+            updateMovieParams.Director,
+            updateMovieParams.ReleaseDate,
+            updateMovieParams.TicketPrice,
+            UpdatedAt = DateTime.UtcNow,
         };
 
         await connection.ExecuteAsync(
@@ -283,22 +278,22 @@ public async Task Update(Guid id, UpdateMovieParams updateMovieParams)
 ```
 And corresponding sql query from `Update.sql` file
 ```sql
-UPDATE movies
+UPDATE Movies
 SET
-    title = @title,
-    director = @director,
-    release_date = @release_date,
-    ticket_price = @ticket_price,
-    updated_at = @updated_at
+    Title = @Title,
+    Director = @Director,
+    ReleaseDate = @ReleaseDate,
+    TicketPrice = @TicketPrice,
+    UpdatedAt = @UpdatedAt
 WHERE id = @id
 ```
 
 ### Delete
-We create a new instance of `NpgsqlConnection`, use `Dapper` to execute query by passing the id, dapper would map the columns to properties.
+We create a new instance of `MySqlConnection`, use `Dapper` to execute query by passing the id.
 ```csharp
 public async Task Delete(Guid id)
 {
-    await using var connection = new NpgsqlConnection(connectionString);
+    await using var connection = new MySqlConnection(this.connectionString);
     await connection.ExecuteAsync(
         sqlHelper.GetSqlFromEmbeddedResource("Delete"),
         new { id },
@@ -309,8 +304,8 @@ public async Task Delete(Guid id)
 And corresponding sql query from `Delete.sql` file
 ```sql
 DELETE
-FROM movies
-WHERE id = @id
+FROM Movies
+WHERE Id = @Id
 ```
 
 Please note we don't throw `RecordNotFoundException` exception as we were doing in `InMemoryMoviesStore`, reason for that is trying to delete a record with a non existent key is not considered an error in Postgres.
@@ -319,7 +314,7 @@ Please note we don't throw `RecordNotFoundException` exception as we were doing 
 Final step is to setup the Dependency Injection container to wireup the new created store. Update `Program.cs` as shown below
 ```csharp
 // builder.Services.AddSingleton<IMoviesStore, InMemoryMoviesStore>();
-builder.Services.AddScoped<IMoviesStore, PostgresMoviesStore>();
+builder.Services.AddScoped<IMoviesStore, MySqlMoviesStore>();
 ```
 
 For simplicity I have disabled `InMemoryMoviesStore`, we can add a configuration and based on that decide which service to use at runtime. That can be a good exercise however we don't do that practically. However for traffic heavy services InMemory or Distributed Cache is used to cache results to improve performance.
@@ -328,15 +323,14 @@ For simplicity I have disabled `InMemoryMoviesStore`, we can add a configuration
 I am not adding any unit or integration tests for this tutorial, perhaps a following tutorial. But all the endpoints can be tested either by the Swagger UI by running the application or using Postman.
 
 ## Source
-Source code for the demo application is hosted on GitHub in [movies-api-cs](https://github.com/kashifsoofi/movies-api-cs/tree/rest-api-with-postgres) repository.
+Source code for the demo application is hosted on GitHub in [blog-code-samples](https://github.com/kashifsoofi/blog-code-samples/tree/main/restapi-with-asp.net-core-7-and-mysql) repository.
 
 ## References
-In no particular order  
-* [REST API using C# .NET 7 with InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/aspnetcore-restapi/)
-* [Postgres Database](https://www.postgresql.org/)
+In no particular order
+* [REST API with ASP.NET Core 7 and InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/restapi-with-asp.net-core-7-and-inmemory-store/)
+* [MySQL Database](https://www.mysql.com/)
 * [roundhouse](https://github.com/chucknorris/roundhouse)
 * [dotnet-script](https://github.com/dotnet-script/dotnet-script)
 * [Dapper](https://github.com/DapperLib/Dapper)
-* [Npgsql](https://www.npgsql.org/doc/index.html)
-* [SqlState 23505](https://stackoverflow.com/questions/24390820/postgresql-error-23505-duplicate-key-value-violates-unique-constraint-foo-col)
+* [MySqlConnector](https://mysqlconnector.net/)
 * And many more
