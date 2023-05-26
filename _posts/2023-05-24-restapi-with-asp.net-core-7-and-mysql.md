@@ -1,5 +1,5 @@
 ---
-title:  "REST API using ASP.NET Core 7 with MySql"
+title:  "REST API using ASP.NET Core 7 and MySql"
 date:   2023-05-24
 categories:
   - aspnetcore

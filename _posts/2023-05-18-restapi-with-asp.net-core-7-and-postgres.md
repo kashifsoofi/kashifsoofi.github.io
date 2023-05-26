@@ -1,5 +1,5 @@
 ---
-title:  "REST API using ASP.NET Core 7 with Postgres"
+title:  "REST API using ASP.NET Core 7 and Postgres"
 date:   2023-05-18
 categories:
   - aspnetcore
