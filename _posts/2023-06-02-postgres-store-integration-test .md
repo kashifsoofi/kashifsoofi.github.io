@@ -11,7 +11,6 @@ tags:
   - postgres
 ---
 
-# Integration Testing Postgres Store
 This is a continuation of an earlier post [REST API with ASP.NET Core 7 and Postgres](https://kashifsoofi.github.io/aspnetcore/rest/postgres/restapi-with-asp.net-core-7-and-postgres/). In this tutorial I will extend the sample to add integration tests to verify our implementation of `PostgresMoviesStore`.
 
 ## Why Integration Test

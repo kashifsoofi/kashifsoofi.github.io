@@ -12,7 +12,6 @@ tags:
   - api
 ---
 
-# REST API using ASP.NET Core 7 and MongoDB
 This is a continuation of an earlier post [REST API with ASP.NET Core 7 and InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/restapi-with-asp.net-core-7-and-inmemory-store/). In this tutorial I will extend the service to store data in [MongoDB](https://www.mongodb.com/), I will be using [MongoDB Community Server Docker Image](https://hub.docker.com/r/mongodb/mongodb-community-server) for this sample. I will use [Docker](https://www.docker.com/) to run MongoDB.
 
 ## Setup Database Server

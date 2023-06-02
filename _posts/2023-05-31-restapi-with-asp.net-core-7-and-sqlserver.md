@@ -12,7 +12,6 @@ tags:
   - api
 ---
 
-# REST API using ASP.NET Core 7 and SQL Server
 This is a continuation of an earlier post [REST API with ASP.NET Core 7 and InMemory Store](https://kashifsoofi.github.io/aspnetcore/rest/restapi-with-asp.net-core-7-and-inmemory-store/). In this tutorial I will extend the service to store data in a [Microsoft SQL Server](https://www.microsoft.com/en-gb/sql-server), I will be using [Microsoft SQL Server - Ubuntu based images](https://hub.docker.com/_/microsoft-mssql-server) for this sample. I will use [Docker](https://www.docker.com/) to run SQL Server and use the same to run database migrations.
 
 ## Setup Database Server
