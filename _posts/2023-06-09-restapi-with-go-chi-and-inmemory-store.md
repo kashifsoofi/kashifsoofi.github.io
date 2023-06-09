@@ -16,7 +16,8 @@ An API, or application programming interface, is a set of rules that define how 
 Focus of this tutorial is to write a REST API with Go.
 
 # Movie Resource
-We would be managing a `Movie` resource with current project. It is not an accurate representation of how you would model a movie resource in an acutal system, just a mix of few basic types and how to handle in rest api.
+We would be managing a `Movie` resource with current project. It is not an accurate representation of how you would model a movie resource in an acutal system, just a mix of few basic types and how to handle in rest api.  
+
 | Field       | Type    |
 |-------------|---------|
 | ID          | UUID    |
@@ -725,12 +726,12 @@ Execute following tests in order, remember to update the port if you are running
 
 ### Tests
 #### Get All returns empty list
-`curl --request GET --url "http://localhost:8080/api/movies"`
+* `curl --request GET --url "http://localhost:8080/api/movies"`
 ```json
 []
 ```
 #### Get By ID with invalid id
-`curl --request GET --url "http://localhost:8080/api/movies/1"`
+* `curl --request GET --url "http://localhost:8080/api/movies/1"`
 ```json
 {"status":"Bad request"}
 ```
