@@ -34,6 +34,7 @@ We would be managing a `Movie` resource with current project. It is not an accur
 go mod init movies-api
 ```
 * Add a new file `main.go` with following content to start with  
+
 ```go
 package main
 
