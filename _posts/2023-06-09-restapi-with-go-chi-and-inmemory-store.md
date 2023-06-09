@@ -725,125 +725,55 @@ Execute following tests in order, remember to update the port if you are running
 
 ### Tests
 #### Get All returns empty list
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies"
-```
-##### Expected Response
-```json
-[]
-```
-#### Get By ID should return Not Found
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/1"
-```
-##### Expected Response
-```json
-[]
-```
-#### Get By ID should return Not Found
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/1"
-```
-##### Expected Response
-```json
-[]
-```
-#### Get By ID should return Not Found
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/1"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies"`
 ```json
 []
 ```
 #### Get By ID with invalid id
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/1"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies/1"`
 ```json
 {"status":"Bad request"}
 ```
 #### Get by ID with non-existent record
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ```json
 {"status":"Resource not found."}
 ```
 #### Create Movie
-##### Request
-```shell
-curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
-```
-##### Expected Response
+`curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"`
 ```json
 ```
 #### Create Movie with existing ID
-##### Request
-```shell
-curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
-```
-##### Expected Response
+`curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"`
 ```json
 {"status":"Duplicate ID","error":"duplicate movie id: 98268a96-a6ac-444f-852a-c6472129aa22"}
 ```
 #### Get ALL Movies
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies"`
 ```json
 [{"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}]
 ```
 #### Get Movie By ID
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}
 ```
 #### Update Movie
-##### Request
-```shell
-curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
+`curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ##### Expected Response
 ```json
 ```
 #### Get Movie by ID - get updated record
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":20.7}
 ```
 #### Delete Movie
-##### Request
-```shell
-curl --request DELETE --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
-##### Expected Response
+`curl --request DELETE --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ```json
 ```
 #### Get Movie By Id - deleted record
-##### Request
-```shell
-curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
-```
-##### Expected Response
+`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
 ```json
 {"status":"Resource not found."}
 ```
