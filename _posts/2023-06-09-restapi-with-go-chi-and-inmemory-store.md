@@ -727,54 +727,98 @@ Execute following tests in order, remember to update the port if you are running
 
 ### Tests
 #### Get All returns empty list
-* `curl --request GET --url "http://localhost:8080/api/movies"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies"
+```
+**Expected Response**
 ```json
 []
 ```
 #### Get By ID with invalid id
-* `curl --request GET --url "http://localhost:8080/api/movies/1"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/1"
+```
+**Expected Response**
 ```json
 {"status":"Bad request"}
 ```
 #### Get by ID with non-existent record
-`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 {"status":"Resource not found."}
 ```
 #### Create Movie
-`curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"`
+**Request**
+```shell
+curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
+```
+**Expected Response**
 ```json
 ```
 #### Create Movie with existing ID
-`curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"`
+**Request**
+```shell
+curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
+```
+**Expected Response**
 ```json
 {"status":"Duplicate ID","error":"duplicate movie id: 98268a96-a6ac-444f-852a-c6472129aa22"}
 ```
 #### Get ALL Movies
-`curl --request GET --url "http://localhost:8080/api/movies"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies"
+```
+**Expected Response**
 ```json
 [{"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}]
 ```
 #### Get Movie By ID
-`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}
 ```
 #### Update Movie
-`curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 ```
 #### Get Movie by ID - get updated record
-`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":20.7}
 ```
 #### Delete Movie
-`curl --request DELETE --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request DELETE --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 ```
 #### Get Movie By Id - deleted record
-`curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
+**Request**
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
+```
+**Expected Response**
 ```json
 {"status":"Resource not found."}
 ```
