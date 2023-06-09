@@ -32,7 +32,7 @@ We would be managing a `Movie` resource with current project. It is not an accur
 ```shell
 go mod init movies-api
 ```
-* Add a new file `main.go` with following content to start with
+* Add a new file `main.go` with following content to start with  
 ```go
 package main
 
@@ -760,7 +760,6 @@ Execute following tests in order, remember to update the port if you are running
 ```
 #### Update Movie
 `curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"`
-##### Expected Response
 ```json
 ```
 #### Get Movie by ID - get updated record
