@@ -449,6 +449,9 @@ apply migrations and then execute tests. We have 2 options here
 
 I will touch on these 2 in next posts.
 
+## Source
+Source code for the demo application is hosted on GitHub in [blog-code-samples](https://github.com/kashifsoofi/blog-code-samples/tree/main/postgres-store-integration-test) repository.
+
 ## References
 In no particular order  
 * [REST API with ASP.NET Core 7 and Postgres](https://kashifsoofi.github.io/aspnetcore/rest/postgres/restapi-with-asp.net-core-7-and-postgres/)
