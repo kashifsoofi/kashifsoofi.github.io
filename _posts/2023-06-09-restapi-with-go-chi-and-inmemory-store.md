@@ -20,7 +20,7 @@ We would be managing a `Movie` resource with current project. It is not an accur
 
 | Field       | Type    |
 |-------------|---------|
-| ID          | UUID    |
+| Id          | UUID    |
 | Title       | String  |
 | Director    | String  |
 | Director    | String  |
@@ -33,8 +33,7 @@ We would be managing a `Movie` resource with current project. It is not an accur
 ```shell
 go mod init movies-api
 ```
-* Add a new file `main.go` with following content to start with  
-
+* Add a new file `main.go` with following content to start with
 ```go
 package main
 
@@ -102,7 +101,7 @@ import (
 )
 
 type Movie struct {
-	ID          uuid.UUID
+	Id          uuid.UUID
 	Title       string
 	Director    string
 	ReleaseDate time.Time
@@ -112,7 +111,7 @@ type Movie struct {
 }
 
 type CreateMovieParams struct {
-	ID          uuid.UUID
+	Id          uuid.UUID
 	Title       string
 	Director    string
 	ReleaseDate time.Time
@@ -127,7 +126,7 @@ func NewCreateMovieParams(
 	ticketPrice float64,
 ) CreateMovieParams {
 	return CreateMovieParams{
-		ID:          id,
+		Id:          id,
 		Title:       title,
 		Director:    director,
 		ReleaseDate: releaseDate,
@@ -158,7 +157,7 @@ func NewUpdateMovieParams(
 
 type MoviesStore interface {
 	GetAll(ctx context.Context) ([]*Movie, error)
-	GetByID(ctx context.Context, id uuid.UUID) (*Movie, error)
+	GetById(ctx context.Context, id uuid.UUID) (*Movie, error)
 	Create(ctx context.Context, createMovieParams CreateMovieParams) error
 	Update(ctx context.Context, id uuid.UUID, updateMovieParams UpdateMovieParams) error
 	Delete(ctx context.Context, id uuid.UUID) error
@@ -175,12 +174,12 @@ import (
 	"github.com/google/uuid"
 )
 
-type DuplicateIDError struct {
-	ID uuid.UUID
+type DuplicateIdError struct {
+	Id uuid.UUID
 }
 
-func (e *DuplicateIDError) Error() string {
-	return fmt.Sprintf("duplicate movie id: %v", e.ID)
+func (e *DuplicateIdError) Error() string {
+	return fmt.Sprintf("duplicate movie id: %v", e.Id)
 }
 
 type RecordNotFoundError struct{}
@@ -229,7 +228,7 @@ func (s *InMemoryMoviesStore) GetAll(ctx context.Context) ([]*store.Movie, error
 	return movies, nil
 }
 
-func (s *InMemoryMoviesStore) GetByID(ctx context.Context, id uuid.UUID) (*store.Movie, error) {
+func (s *InMemoryMoviesStore) GetById(ctx context.Context, id uuid.UUID) (*store.Movie, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -245,12 +244,12 @@ func (s *InMemoryMoviesStore) Create(ctx context.Context, createMovieParams stor
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if _, ok := s.movies[createMovieParams.ID]; ok {
-		return &store.DuplicateIDError{ID: createMovieParams.ID}
+	if _, ok := s.movies[createMovieParams.Id]; ok {
+		return &store.DuplicateIdError{Id: createMovieParams.Id}
 	}
 
 	movie := &store.Movie{
-		ID:          createMovieParams.ID,
+		Id:          createMovieParams.Id,
 		Title:       createMovieParams.Title,
 		Director:    createMovieParams.Director,
 		ReleaseDate: createMovieParams.ReleaseDate,
@@ -259,7 +258,7 @@ func (s *InMemoryMoviesStore) Create(ctx context.Context, createMovieParams stor
 		UpdatedAt:   time.Now().UTC(),
 	}
 
-	s.movies[movie.ID] = movie
+	s.movies[movie.Id] = movie
 	return nil
 }
 
@@ -407,7 +406,7 @@ func ErrConflict(err error) render.Renderer {
 	return &ErrResponse{
 		Err:            err,
 		HTTPStatusCode: 409,
-		StatusText:     "Duplicate ID",
+		StatusText:     "Duplicate Id",
 		ErrorText:      err.Error(),
 	}
 }
@@ -468,11 +467,11 @@ func (s *Server) handleGetHealth() http.HandlerFunc {
 
 ## Movies Endpoints Handlers
 
-### Get Movie By ID
+### Get Movie By Id
 Let's start by adding a struct we would use to return a `Movie` to the caller of our REST service and also implement `Renderer` interface so that we can use `Render` method to return data.
 ```go
 type movieResponse struct {
-	ID          uuid.UUID `json:"id"`
+	Id          uuid.UUID `json:"id"`
 	Title       string    `json:"title"`
 	Director    string    `json:"director"`
 	ReleaseDate time.Time `json:"release_date"`
@@ -481,7 +480,7 @@ type movieResponse struct {
 
 func NewMovieResponse(m *store.Movie) movieResponse {
 	return movieResponse{
-		ID:          m.ID,
+		Id:          m.Id,
 		Title:       m.Title,
 		Director:    m.Director,
 		ReleaseDate: m.ReleaseDate,
@@ -510,7 +509,7 @@ func (s *Server) handleGetMovie() http.HandlerFunc {
 			return
 		}
 
-		movie, err := s.store.GetByID(r.Context(), id)
+		movie, err := s.store.GetById(r.Context(), id)
 		if err != nil {
 			var rnfErr *store.RecordNotFoundError
 			if errors.As(err, &rnfErr) {
@@ -528,7 +527,7 @@ func (s *Server) handleGetMovie() http.HandlerFunc {
 ```
 
 ### Get All/List Movies
-For response we would use the same `movieResponse` struct we defined for `Get By ID`, we would just add a new method to create an array/slice of `Renderer`
+For response we would use the same `movieResponse` struct we defined for `Get By Id`, we would just add a new method to create an array/slice of `Renderer`
 ```go
 func NewMovieListResponse(movies []*store.Movie) []render.Renderer {
 	list := []render.Renderer{}
@@ -561,7 +560,7 @@ Same as get, we would start by adding a new struct to receive parameters require
 Please note we don't have `CreatedAt` and `UpdatedAt` in this struct.
 ```go
 type createMovieRequest struct {
-	ID          string    `json:"id"`
+	Id          string    `json:"id"`
 	Title       string    `json:"title"`
 	Director    string    `json:"director"`
 	ReleaseDate time.Time `json:"release_date"`
@@ -584,7 +583,7 @@ func (s *Server) handleCreateMovie() http.HandlerFunc {
 		}
 
 		createMovieParams := store.NewCreateMovieParams(
-			uuid.MustParse(data.ID),
+			uuid.MustParse(data.Id),
 			data.Title,
 			data.Director,
 			data.ReleaseDate,
@@ -592,7 +591,7 @@ func (s *Server) handleCreateMovie() http.HandlerFunc {
 		)
 		err := s.store.Create(r.Context(), createMovieParams)
 		if err != nil {
-			var dupIdErr *store.DuplicateIDError
+			var dupIdErr *store.DuplicateIdError
 			if errors.As(err, &dupIdErr) {
 				render.Render(w, r, ErrConflict(err))
 			} else {
@@ -725,100 +724,129 @@ go run main.go
 ```
 Execute following tests in order, remember to update the port if you are running on a different port than 8080.
 
+> **_NOTE:_**  I have not added `created_at` and `updated_at` fields in responses below.
+
 ### Tests
 #### Get All returns empty list
-**Request**
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 []
 ```
-#### Get By ID with invalid id
-**Request**
+#### Get By Id should return Not Found
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies/1"
 ```
-**Expected Response**
+##### Expected Response
+```json
+[]
+```
+#### Get By Id should return Not Found
+##### Request
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/1"
+```
+##### Expected Response
+```json
+[]
+```
+#### Get By Id should return Not Found
+##### Request
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/1"
+```
+##### Expected Response
+```json
+[]
+```
+#### Get By Id with invalid id
+##### Request
+```shell
+curl --request GET --url "http://localhost:8080/api/movies/1"
+```
+##### Expected Response
 ```json
 {"status":"Bad request"}
 ```
-#### Get by ID with non-existent record
-**Request**
+#### Get by Id with non-existent record
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 {"status":"Resource not found."}
 ```
 #### Create Movie
-**Request**
+##### Request
 ```shell
 curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 ```
-#### Create Movie with existing ID
-**Request**
+#### Create Movie with existing Id
+##### Request
 ```shell
 curl --request POST --data '{ "id": "98268a96-a6ac-444f-852a-c6472129aa22", "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 10.70 }' --url "http://localhost:8080/api/movies"
 ```
-**Expected Response**
+##### Expected Response
 ```json
-{"status":"Duplicate ID","error":"duplicate movie id: 98268a96-a6ac-444f-852a-c6472129aa22"}
+{"status":"Duplicate Id","error":"duplicate movie id: 98268a96-a6ac-444f-852a-c6472129aa22"}
 ```
 #### Get ALL Movies
-**Request**
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 [{"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}]
 ```
-#### Get Movie By ID
-**Request**
+#### Get Movie By Id
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":10.7}
 ```
 #### Update Movie
-**Request**
+##### Request
 ```shell
 curl --request PUT --data '{ "title": "Star Wars: Episode I – The Phantom Menace", "director": "George Lucas", "release_date": "1999-05-16T01:01:01.00Z", "ticket_price": 20.70 }' --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 ```
-#### Get Movie by ID - get updated record
-**Request**
+#### Get Movie by Id - get updated record
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 {"id":"98268a96-a6ac-444f-852a-c6472129aa22","title":"Star Wars: Episode I – The Phantom Menace","director":"George Lucas","release_date":"1999-05-16T01:01:01Z","ticket_price":20.7}
 ```
 #### Delete Movie
-**Request**
+##### Request
 ```shell
 curl --request DELETE --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 ```
 #### Get Movie By Id - deleted record
-**Request**
+##### Request
 ```shell
 curl --request GET --url "http://localhost:8080/api/movies/98268a96-a6ac-444f-852a-c6472129aa22"
 ```
-**Expected Response**
+##### Expected Response
 ```json
 {"status":"Resource not found."}
 ```
