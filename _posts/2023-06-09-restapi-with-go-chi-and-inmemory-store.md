@@ -15,7 +15,7 @@ An API, or application programming interface, is a set of rules that define how 
 
 Focus of this tutorial is to write a REST API with Go.
 
-# Movie Resource
+## Movie Resource
 We would be managing a `Movie` resource with current project. It is not an accurate representation of how you would model a movie resource in an acutal system, just a mix of few basic types and how to handle in rest api.  
 
 | Field       | Type    |
@@ -27,7 +27,7 @@ We would be managing a `Movie` resource with current project. It is not an accur
 | ReleaseDate | Time    |
 | TicketPrice | float64 |
 
-# Project Setup
+## Project Setup
 * Create a folder for project, I named it as `restapi-with-go-chi-and-inmemory-store` but it usually would be at the root of the GitHub repo, or a subfolder in a mono reop.
 * Execute following command to initialise `go.mod` on terminal
 ```shell
