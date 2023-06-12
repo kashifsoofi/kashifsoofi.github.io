@@ -33,7 +33,8 @@ We will be managing a `Movie` resource with the current project. It is not an ac
 ```shell
 go mod init github.com/kashifsoofi/blog-code-samples/movies-api-with-go-chi-and-memory-store
 ```
-* Add a new file `main.go` with following content to start with  
+* Add a new file `main.go` with following content to start with
+
 ```go
 package main
 
