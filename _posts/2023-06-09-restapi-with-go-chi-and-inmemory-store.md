@@ -28,13 +28,14 @@ We will be managing a `Movie` resource with the current project. It is not an ac
 | TicketPrice | float64 |
 
 ## Project Setup
-* Create a folder for project, I named it as `movies-api-with-go-chi-and-memory-store` but it usually will be the root of the GitHub repo so you can name it appropriately e.g. `movies-api`.
-* Execute following command to initialise `go.mod` on terminal  
+Create a folder for project, I named it as `movies-api-with-go-chi-and-memory-store` but it usually will be the root of the GitHub repo so you can name it appropriately e.g. `movies-api`.
+
+Execute following command to initialise `go.mod` on terminal  
 ```shell
 go mod init github.com/kashifsoofi/blog-code-samples/movies-api-with-go-chi-and-memory-store
 ```
-* Add a new file `main.go` with following content to start with
 
+Add a new file `main.go` with following content to start with  
 ```go
 package main
 
