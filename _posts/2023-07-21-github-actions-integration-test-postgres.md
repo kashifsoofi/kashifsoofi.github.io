@@ -2,15 +2,15 @@
 title:  "Integration Test Postgres using GitHub Actions"
 date:   2023-07-21
 categories:
-  - testing
+  - integrationtest
   - postgres
   - ci
-  - github actions
 tags:
   - C#
   - integrationtest
   - testing
   - github actions
+  - postgres
 ---
 
 This is a continuation of an earlier post [Integration Testing Postgres Store](https://kashifsoofi.github.io/aspnetcore/testing/integrationtest/postgres/postgres-store-integration-test/). In this tutorial I will show you how I setup [GitHub Actions](https://github.com/features/actions) to run integration tests when a change is made to the repository. 
