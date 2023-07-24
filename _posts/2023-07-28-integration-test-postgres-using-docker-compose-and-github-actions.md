@@ -15,7 +15,7 @@ tags:
 
 This is a continuation of an earlier post [Integration Testing Postgres Store](https://kashifsoofi.github.io/aspnetcore/testing/integrationtest/postgres/postgres-store-integration-test/). In this tutorial I will show you how I setup [GitHub Actions](https://github.com/features/actions) to run integration tests using the `docker-compose.dev-env.yml` file.
 
-There is another post [Integration Test Postgres using GitHub Actions](https://kashifsoofi.github.io/integrationtest/postgres/ci/integration-test-postgres-using-github-actions) that uses [GitHub Actions service containers](https://docs.github.com/en/actions/using-containerized-services/about-service-containers) to setup postgres before running integration tests.
+There is another post [Integration Test Postgres using GitHub Actions](https://kashifsoofi.github.io/integrationtest/postgres/ci/github-actions-integration-test-postgres/) that uses [GitHub Actions service containers](https://docs.github.com/en/actions/using-containerized-services/about-service-containers) to setup postgres before running integration tests.
 
 ## Workflow
 
