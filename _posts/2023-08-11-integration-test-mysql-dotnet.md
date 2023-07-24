@@ -29,13 +29,13 @@ Focus of this article would be to implement automated integration tests for `MyS
 Let's start by adding a new test project.
 * Right click on Solution name -> Add -> New Project -> Tests -> xUnit Test Project
 <figure>
-  <a href="images/001-new-project.png"><img src="images/001-new-project.png"></a>
+  <a href="/assets/images/2023-08-11/001-new-project.png"><img src="/assets/images/2023-08-11/001-new-project.png"></a>
   <figcaption>New xUnit Test Project</figcaption>
 </figure>
 * Select Target Framework, I have selected `.NET 7.0` as we are targeting `.NET 7.0` in this sample
 * Name your test project, I like to name as Project I am testing followed by `.Tests` and followed by test types `.Integration`
 <figure>
-  <a href="images/002-name-project.png"><img src="images/002-name-project.png"></a>
+  <a href="/assets/images/2023-08-11/002-name-project.png"><img src="/assets/images/2023-08-11/002-name-project.png"></a>
   <figcaption>Name Test Project</figcaption>
 </figure>
 * Click create to finish creating test project.
