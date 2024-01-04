@@ -86,12 +86,12 @@ fn build_ui(app: &Application) {
 
 <figure>
   <a href="/assets/images/2024-01-11/01-font-dialog-button.png"><img src="/assets/images/2024-01-11/01-font-dialog-button.png"></a>
-  <figcaption>Increase Button</figcaption>
+  <figcaption>Font Dialog Button</figcaption>
 </figure>
 
 <figure>
   <a href="/assets/images/2024-01-11/02-font-dialog.png"><img src="/assets/images/2024-01-11/02-font-dialog.png"></a>
-  <figcaption>Increase Button</figcaption>
+  <figcaption>Font Dialog</figcaption>
 </figure>
 
 ## Choose Font with Button
@@ -137,12 +137,12 @@ Shout out to [pacview preferences_window.rs](https://github.com/drakkar1969/pacv
 
 <figure>
   <a href="/assets/images/2024-01-11/03-button-select-font.png"><img src="/assets/images/2024-01-11/03-button-select-font.png"></a>
-  <figcaption>Increase Button</figcaption>
+  <figcaption>Button Select Font</figcaption>
 </figure>
 
 <figure>
   <a href="/assets/images/2024-01-11/04-selected-font.png"><img src="/assets/images/2024-01-11/04-selected-font.png"></a>
-  <figcaption>Increase Button</figcaption>
+  <figcaption>Selected Font</figcaption>
 </figure>
 
 ## Choose Font with Button (Async)
