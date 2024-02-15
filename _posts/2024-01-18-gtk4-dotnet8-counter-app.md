@@ -3,10 +3,10 @@ title:  "Counter App with GTK4 and .NET 8"
 date:   2024-01-18
 categories:
   - gtk4
-  - .NET 8
+  - dotnet
 tags:
   - gtk4
-  - .net8
+  - .NET 8
   - C#
 ---
 ## GTK and .NET
