@@ -5,7 +5,7 @@ categories:
   - dotnet
   - ef-core
 tags:
-  - .net
+  - .NET 8
   - entity framework
   - dapper
 ---
